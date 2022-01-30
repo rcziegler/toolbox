@@ -233,7 +233,29 @@ var inputHandler = {
   }
 };
 exports.default = inputHandler;
-},{"./types":"../inputHandler/src/types.ts"}],"src/hexogonWorld.ts":[function(require,module,exports) {
+},{"./types":"../inputHandler/src/types.ts"}],"src/hexogon.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Hexogon = void 0;
+
+var Hexogon = function Hexogon(pt) {
+  var xPos = pt.xPos,
+      yPos = pt.yPos;
+
+  var display = function display() {
+    console.log("> xPos ".concat(xPos, ", yPos ").concat(yPos));
+  };
+
+  return {
+    display: display
+  };
+};
+
+exports.Hexogon = Hexogon;
+},{}],"src/hexogonWorld.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -248,6 +270,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var inputHandler_1 = __importDefault(require("../../inputHandler/src/inputHandler"));
 
+var hexogon_1 = require("./hexogon");
+
 var VIEWBOX_HEIGHT = 100;
 var VIEWBOX_WIDTH = 100;
 var WORLD_HEIGHT = 400;
@@ -255,7 +279,17 @@ var WORLD_WIDTH = 800;
 var count = 0;
 var speed = 4;
 var xPos = 10;
-var yPos = 10;
+var yPos = 10; // let pt1: Point = { xPos: 10, yPos: 10};
+// let pt2: Point = { xPos: 20, yPos: 20};
+
+var hex1 = (0, hexogon_1.Hexogon)({
+  xPos: 10,
+  yPos: 10
+});
+var hex2 = (0, hexogon_1.Hexogon)({
+  xPos: 20,
+  yPos: 20
+});
 /** */
 
 var hexogonWorld = {
@@ -294,15 +328,17 @@ var hexogonWorld = {
     var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     x.setAttribute("height", WORLD_HEIGHT.toString());
     x.setAttribute("style", "border: 1px solid black");
-    console.log("> zoomScale ".concat(scale));
-    var currHeight = WORLD_HEIGHT * inputHandler_1.default.zoomScale;
-    var currWidth = WORLD_WIDTH * inputHandler_1.default.zoomScale;
+    console.log("> zoomScale ".concat(zoomScale));
+    var currHeight = WORLD_HEIGHT * zoomScale;
+    var currWidth = WORLD_WIDTH * zoomScale;
     x.setAttribute("viewBox", "0 0 ".concat(currHeight.toString(), " ").concat(currWidth.toString()));
     x.setAttribute("width", WORLD_WIDTH.toString());
     circle.setAttributeNS(null, 'cx', xPos.toString());
     circle.setAttributeNS(null, 'cy', yPos.toString());
     circle.setAttributeNS(null, 'r', "5");
-    circle.setAttributeNS(null, 'style', 'fill: none; stroke: blue; stroke-width: 1px;'); //world.innerHTML = (count++).toString();
+    circle.setAttributeNS(null, 'style', 'fill: none; stroke: blue; stroke-width: 1px;');
+    console.log(hex1.display());
+    console.log(hex2.display()); //world.innerHTML = (count++).toString();
 
     world.innerHTML = "";
     x.appendChild(circle);
@@ -310,7 +346,7 @@ var hexogonWorld = {
   }
 };
 exports.default = hexogonWorld;
-},{"../../inputHandler/src/inputHandler":"../inputHandler/src/inputHandler.ts"}],"index.ts":[function(require,module,exports) {
+},{"../../inputHandler/src/inputHandler":"../inputHandler/src/inputHandler.ts","./hexogon":"src/hexogon.ts"}],"index.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -378,7 +414,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37179" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43451" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
