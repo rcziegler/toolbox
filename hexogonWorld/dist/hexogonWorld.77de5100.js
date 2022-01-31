@@ -233,7 +233,32 @@ var inputHandler = {
   }
 };
 exports.default = inputHandler;
-},{"./types":"../inputHandler/src/types.ts"}],"src/hexogon.ts":[function(require,module,exports) {
+},{"./types":"../inputHandler/src/types.ts"}],"src/common.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.transformPoint = void 0;
+/** */
+
+var getAsRadians = function getAsRadians(degrees) {
+  return degrees * Math.PI / 180;
+};
+/** */
+
+
+var transformPoint = function transformPoint(point, degrees, length) {
+  var x2 = point.x + length * Math.cos(getAsRadians(degrees));
+  var y2 = point.y - length * Math.sin(getAsRadians(degrees));
+  return {
+    x: x2,
+    y: y2
+  };
+};
+
+exports.transformPoint = transformPoint;
+},{}],"src/hexogon.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -241,21 +266,51 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Hexogon = void 0;
 
-var Hexogon = function Hexogon(pt) {
-  var xPos = pt.xPos,
-      yPos = pt.yPos;
+var common_1 = require("./common");
+
+var Hexogon = function Hexogon(pt, color) {
+  var x = pt.x,
+      y = pt.y;
+  /** TODO | turn into a module w/toString() */
+
+  var getPointStr = function getPointStr(pt) {
+    return "".concat(pt.x, " ").concat(pt.y, " ");
+  };
+
+  var draw = function draw() {
+    var size = 100;
+    var angles = [0, -60, -120, -180, -240]; // last angle taken care of w/Z
+    //let currPt = { x: 10, y: 10 };
+
+    var currPt = pt; // set starting position
+
+    var pathString = "M ".concat(getPointStr(currPt)); // draw lines for each side
+
+    angles.forEach(function (angle) {
+      currPt = (0, common_1.transformPoint)(currPt, angle, size);
+      pathString += "L ".concat(getPointStr(currPt));
+    });
+    pathString += "Z";
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute("d", pathString);
+    path.setAttribute("fill", color);
+    return path;
+  };
+  /** */
+
 
   var display = function display() {
-    console.log("> xPos ".concat(xPos, ", yPos ").concat(yPos));
+    console.log("> xPos ".concat(x, ", yPos ").concat(y));
   };
 
   return {
-    display: display
+    display: display,
+    draw: draw
   };
 };
 
 exports.Hexogon = Hexogon;
-},{}],"src/hexogonWorld.ts":[function(require,module,exports) {
+},{"./common":"src/common.ts"}],"src/hexogonWorld.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -283,13 +338,13 @@ var yPos = 10; // let pt1: Point = { xPos: 10, yPos: 10};
 // let pt2: Point = { xPos: 20, yPos: 20};
 
 var hex1 = (0, hexogon_1.Hexogon)({
-  xPos: 10,
-  yPos: 10
-});
+  x: 10,
+  y: 10
+}, "green");
 var hex2 = (0, hexogon_1.Hexogon)({
-  xPos: 20,
-  yPos: 20
-});
+  x: 200,
+  y: 200
+}, "brown");
 /** */
 
 var hexogonWorld = {
@@ -341,6 +396,8 @@ var hexogonWorld = {
     console.log(hex2.display()); //world.innerHTML = (count++).toString();
 
     world.innerHTML = "";
+    x.appendChild(hex1.draw());
+    x.appendChild(hex2.draw());
     x.appendChild(circle);
     world.appendChild(x);
   }

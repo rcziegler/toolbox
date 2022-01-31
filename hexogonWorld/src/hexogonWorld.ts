@@ -19,8 +19,8 @@ let yPos = 10;
 
 // let pt1: Point = { xPos: 10, yPos: 10};
 // let pt2: Point = { xPos: 20, yPos: 20};
-let hex1 = Hexogon({ xPos: 10, yPos: 10 });
-let hex2 = Hexogon({ xPos: 20, yPos: 20 });
+let hex1 = Hexogon({ x: 10, y: 10 }, "green");
+let hex2 = Hexogon({ x: 200, y: 200 }, "brown");
 
 /** */
 const hexogonWorld = {
@@ -76,7 +76,11 @@ const hexogonWorld = {
 
     //world.innerHTML = (count++).toString();
     world.innerHTML = "";
+
+    x.appendChild(hex1.draw());
+    x.appendChild(hex2.draw());
     x.appendChild(circle);
+
     world.appendChild(x);
   }
 }
